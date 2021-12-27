@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("HLEa26jhsW2qVg7zeR67jzLWTcYZWWhBa5nVZK6pxCBM");
 
 #[program]
 pub mod solana_todo {
@@ -16,7 +16,7 @@ pub mod solana_todo {
         Ok(())
     }
 
-    pub fn delete(ctx: Context<Update>, index: u8) -> ProgramResult {
+    pub fn remove(ctx: Context<Update>, index: u8) -> ProgramResult {
         let base_account = &mut ctx.accounts.base_account;
         base_account.todo_list.remove(index as usize);
         Ok(())

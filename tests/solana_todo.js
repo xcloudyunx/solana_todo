@@ -74,10 +74,10 @@ describe('solana_todo', () => {
     assert.ok(account.completedList.length === 1);
   });
 
-  it ("Delete task", async () => {
+  it ("Remove task", async () => {
     const baseAccount = _baseAccount;
 
-    await program.rpc.delete(0, {
+    await program.rpc.remove(0, {
       accounts: {
         baseAccount: baseAccount.publicKey,
       }

@@ -1,15 +1,12 @@
-import "./App.css";
 import { useState } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { Program, Provider, web3 } from "@project-serum/anchor";
 import idl from "./idl.json";
+import { useWallet } from "@solana/wallet-adapter-react";
 
-import { getPhantomWallet } from "@solana/wallet-adapter-wallets";
-import { useWallet, WalletProvider, ConnectionProvider } from "@solana/wallet-adapter-react";
-import { WalletModalProvider, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-require("@solana/wallet-adapter-react-ui/styles.css");
-
-const wallets = [ getPhantomWallet() ];
+import AddItem from "./AddItem";
+import Item from "./Item";
+import CompletedItem from "./CompletedItem";
 
 const { SystemProgram, Keypair } = web3;
 const baseAccount = Keypair.generate();
@@ -23,6 +20,7 @@ function App() {
   const [todoList, setTodoList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [input, setInput] = useState("");
+  
   const wallet = useWallet();
 
   async function getProvider() {
@@ -58,7 +56,9 @@ function App() {
     }
   }
 
-  async function add() {
+  async function add(evt) {
+    evt.preventDefault();
+    console.log("test")
     if (!input) return;
     const provider = await getProvider();
     const program = new Program(idl, programID, provider);
@@ -78,6 +78,7 @@ function App() {
       alert("an error occured");
       console.log("Transaction error: ", err);
     }
+    console.log("completed")
   }
 
   async function complete(index) {
@@ -120,53 +121,44 @@ function App() {
     }
   }
 
-  if (!wallet.connected) {
-    return (
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "100px" }}>
-        <WalletMultiButton />
-      </div>
-    );
-  } else {
-    return (
-      <div className="App">
-        <div>
-          {
-            !initialised && (<button onClick={initialise}>Initialise</button>)
-          }
-          {
-            initialised ? (
-              <div>
-                <input
-                  placeholder="Add new task"
-                  onChange={e => setInput(e.target.value)}
-                  value={input}
+  return (
+    <div>
+      {
+        initialised ? (
+          <div>
+            <AddItem
+              add={add}
+              input={input}
+              setInput={setInput}
+            />
+            {
+              todoList.map((d, i) => (
+                <Item
+                  key={i}
+                  value={d}
+                  complete={complete}
+                  remove={remove}
                 />
-                <button onClick={add}>Add task</button>
-              </div>
-            ) : (
-              <h3>Please initialise.</h3>
-            )
-          }
-          {
-            todoList.map((d, i) => <h4 key={i} onClick={() => complete(i)}>{d}</h4>)
-          }
-          {
-            completedList.map((d, i) => <h5 key={i}>{d}</h5>)
-          }
-        </div>
-      </div>
+              ))
+            }
+            {
+              completedList.map((d, i) => (
+                <CompletedItem
+                  key={i}
+                  value={d}
+                />
+              ))
+            }
+          </div>
+        ) : (
+          <div>
+            <button onClick={initialise}>Initialise</button>
+            <h3>Please initialise.</h3>
+          </div>
+        )
+      }
+    </div>
     );
-  }
 }
 
-const AppWithProvider = () => (
-  <ConnectionProvider endpoint="http://localhost:8899">
-    <WalletProvider wallets={wallets} autoConnect>
-      <WalletModalProvider>
-        <App />
-      </WalletModalProvider>
-    </WalletProvider>
-  </ConnectionProvider>
-)
-
-export default AppWithProvider;
+export default App;

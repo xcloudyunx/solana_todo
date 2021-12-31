@@ -5,8 +5,10 @@ import idl from "./idl.json";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 import AddItem from "./AddItem";
-import Item from "./Item";
+import ToDo from "./ToDo";
 import CompletedItem from "./CompletedItem";
+
+import "./App.css";
 
 const { SystemProgram, Keypair } = web3;
 const baseAccount = Keypair.generate();
@@ -124,23 +126,19 @@ function App() {
   return (
     <div>
       {
-        initialised ? (
-          <div>
+        wallet.connected && (initialised ? (
+          <div class="app">
             <AddItem
               add={add}
               input={input}
               setInput={setInput}
             />
-            {
-              todoList.map((d, i) => (
-                <Item
-                  key={i}
-                  value={d}
-                  complete={complete}
-                  remove={remove}
-                />
-              ))
-            }
+            <ToDo
+              complete={complete}
+              remove={remove}
+              todoList={todoList}
+            />
+            
             {
               completedList.map((d, i) => (
                 <CompletedItem
@@ -151,11 +149,11 @@ function App() {
             }
           </div>
         ) : (
-          <div>
+          <div class="app">
             <button onClick={initialise}>Initialise</button>
             <h3>Please initialise.</h3>
           </div>
-        )
+        ))
       }
     </div>
     );

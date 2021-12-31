@@ -1,9 +1,9 @@
 function Item(props) {
     return (
-        <div>
-            <input type="checkbox" onChange={props.complete} />
-            <label>{props.value}</label>
-            <input type="radio" onChange={props.remove} />
+        <div class="item">
+            <input type="checkbox" onChange={props.complete} class="complete" />
+            <label class="label">{props.value}</label>
+            <input type="radio" onChange={props.remove} class="remove" />
         </div>
     );
 }

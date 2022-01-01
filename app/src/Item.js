@@ -1,9 +1,24 @@
 function Item(props) {
     return (
-        <div class="item">
-            <input type="checkbox" onChange={props.complete} class="complete" />
-            <label class="label">{props.value}</label>
-            <input type="radio" onChange={props.remove} class="remove" />
+        <div className="item">
+            <input
+                type="checkbox"
+                onChange={props.completed ? null : props.complete}
+                className="complete"
+                checked={props.completed}
+                disabled={props.completed}
+            />
+            <label
+                className="label"
+            >
+                {props.value}
+            </label>
+            <input
+                type="button"
+                onClick={props.completed ? null : props.remove}
+                className="remove"
+                style={{visibility: props.completed ? "hidden" : "visible"}}
+            />
         </div>
     );
 }

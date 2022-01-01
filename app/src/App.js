@@ -6,7 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 
 import AddItem from "./AddItem";
 import ToDo from "./ToDo";
-import CompletedItem from "./CompletedItem";
+import Completed from "./Completed";
 
 import "./App.css";
 
@@ -60,7 +60,6 @@ function App() {
 
   async function add(evt) {
     evt.preventDefault();
-    console.log("test")
     if (!input) return;
     const provider = await getProvider();
     const program = new Program(idl, programID, provider);
@@ -80,7 +79,6 @@ function App() {
       alert("an error occured");
       console.log("Transaction error: ", err);
     }
-    console.log("completed")
   }
 
   async function complete(index) {
@@ -127,7 +125,7 @@ function App() {
     <div>
       {
         wallet.connected && (initialised ? (
-          <div class="app">
+          <div className="app">
             <AddItem
               add={add}
               input={input}
@@ -138,18 +136,12 @@ function App() {
               remove={remove}
               todoList={todoList}
             />
-            
-            {
-              completedList.map((d, i) => (
-                <CompletedItem
-                  key={i}
-                  value={d}
-                />
-              ))
-            }
+            <Completed
+              completedList={completedList}
+            />
           </div>
         ) : (
-          <div class="app">
+          <div className="app">
             <button onClick={initialise}>Initialise</button>
             <h3>Please initialise.</h3>
           </div>

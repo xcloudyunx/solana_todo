@@ -2,14 +2,16 @@ import Item from "./Item";
 
 function ToDo(props) {
     return (
-        <div class="todo">
+        <div id="todo" className="list">
+            <h3>Todo</h3>
             {
                 props.todoList.map((d, i) => (
                     <Item
                         key={i}
                         value={d}
-                        complete={props.complete}
-                        remove={props.remove}
+                        complete={() => props.complete(i)}
+                        remove={() => props.remove(i)}
+                        completed={false}
                     />
                 ))
             }

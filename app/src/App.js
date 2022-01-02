@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { Program, Provider, web3 } from "@project-serum/anchor";
 import idl from "./idl.json";
+import kp from "./keypair.json";
 import { useWallet } from "@solana/wallet-adapter-react";
 
 import AddItem from "./AddItem";
@@ -11,7 +12,8 @@ import Completed from "./Completed";
 import "./App.css";
 
 const { SystemProgram, Keypair } = web3;
-const baseAccount = Keypair.generate();
+const secret = new Uint8Array(Object.values(kp._keypair.secretKey));
+const baseAccount = Keypair.fromSecretKey(secret);
 const opts = {
   preflightCommitment: "processed"
 }
@@ -22,7 +24,7 @@ function App() {
   const [todoList, setTodoList] = useState([]);
   const [completedList, setCompletedList] = useState([]);
   const [input, setInput] = useState("");
-  
+
   const wallet = useWallet();
 
   async function getProvider() {
@@ -47,6 +49,18 @@ function App() {
         signers: [baseAccount]
       });
 
+      fetch(program);
+      setInitialised(true);
+    } catch (err) {
+      alert("an error occured");
+      console.log("Transaction error: ", err);
+    }
+  }
+
+  async function fetch() {
+    const provider = await getProvider();
+    const program = new Program(idl, programID, provider);
+    try {
       const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
       console.log("account: ", account);
       setTodoList(account.todoList);
@@ -70,10 +84,7 @@ function App() {
         }
       });
 
-      const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-      console.log("account: ", account);
-      setTodoList(account.todoList);
-      setCompletedList(account.completedList);
+      await fetch();
       setInput("");
     } catch (err) {
       alert("an error occured");
@@ -91,10 +102,7 @@ function App() {
         }
       });
 
-      const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-      console.log("account: ", account);
-      setTodoList(account.todoList);
-      setCompletedList(account.completedList);
+      await fetch();
     } catch (err) {
       alert("an error occured");
       console.log("Transaction error: ", err);
@@ -111,10 +119,7 @@ function App() {
         }
       });
 
-      const account = await program.account.baseAccount.fetch(baseAccount.publicKey);
-      console.log("account: ", account);
-      setTodoList(account.todoList);
-      setCompletedList(account.completedList);
+      await fetch();
     } catch (err) {
       alert("an error occured");
       console.log("Transaction error: ", err);
@@ -143,7 +148,8 @@ function App() {
         ) : (
           <div className="app">
             <button onClick={initialise}>Initialise</button>
-            <h3>Please initialise.</h3>
+            <button onClick={fetch}>Fetch</button>
+            <h3>Please initialise or fetch.</h3>
           </div>
         ))
       }
